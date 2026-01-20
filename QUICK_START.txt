@@ -1,0 +1,74 @@
+═══════════════════════════════════════════════════════════════
+  QUICK START - AUTO SECRET FISH IT SCRIPT
+═══════════════════════════════════════════════════════════════
+
+⚠️ PENTING: Multiget = Download Manager, BUKAN Executor!
+   Untuk execute script, perlu Executor Roblox (Script-Ware/Krnl/Fluxus)
+
+LANGKAH CEPAT:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A. DOWNLOAD EXECUTOR (Pakai Multiget):
+   1. Buka Multiget → Job → New Job
+   2. URL: Link download executor (Script-Ware/Krnl/Fluxus)
+   3. Save To: Pilih folder
+   4. OK → Download → Install executor
+
+B. EXECUTE SCRIPT (Pakai Executor):
+   1. Buka game "Fish It" di Roblox
+   2. Buka Executor (Script-Ware/Krnl/Fluxus)
+   3. Attach/Inject ke Roblox
+   4. Load script auto_secret_fishit.lua
+   5. Execute script (F5 atau tombol Execute)
+   6. UI muncul → Klik "ENABLED"
+   7. Selesai! Script akan otomatis mencari ikan secret
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+UI YANG MUNCUL:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌─────────────────────────────┐
+│  🐟 Auto Secret Fish (TEST) │
+├─────────────────────────────┤
+│  [ENABLED] ← Klik untuk ON  │
+│                             │
+│  Location: Beach            │
+│  Secret Fish: 2             │
+│  Status: Active             │
+└─────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TROUBLESHOOTING:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ UI tidak muncul?
+   → Pastikan script sudah di-execute
+   → Cek console (F9) untuk error
+
+❌ Tidak detect ikan secret?
+   → Script ini template, perlu disesuaikan dengan game
+   → Cek nama objek ikan secret di game
+   → Update daftar secretFishes di script
+
+❌ Multiget tidak bisa attach?
+   → Pastikan Roblox sudah terbuka
+   → Tutup executor lain yang berjalan
+   → Restart Multiget dan Roblox
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ PERINGATAN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- Script ini untuk TESTING saja!
+- Jangan pakai di main account (risiko ban)
+- Gunakan di alt account atau private server
+- Script mungkin perlu disesuaikan dengan game
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 Panduan lengkap: Lihat CARA_PAKAI.md
+
+═══════════════════════════════════════════════════════════════

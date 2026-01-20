@@ -1,0 +1,79 @@
+═══════════════════════════════════════════════════════════════
+  🔧 FIX: Download Fluxus Malah Jadi File Roblox
+═══════════════════════════════════════════════════════════════
+
+❌ MASALAH:
+   Download Fluxus tapi pas diinstall malah jadi file Roblox
+
+✅ SOLUSI:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. CEK FILE YANG DIDOWNLOAD:
+   ✅ Nama file harus: "Fluxus.exe" atau "Fluxus.zip"
+   ❌ BUKAN: "RobloxInstaller.exe" atau "RobloxPlayerLauncher.exe"
+   
+   → Jika nama file mengandung "Roblox", berarti SALAH!
+
+2. CEK UKURAN FILE:
+   ✅ Fluxus: 5-50 MB
+   ❌ Jika terlalu kecil/besar, mungkin salah
+
+3. CEK TIPE FILE:
+   ✅ Fluxus: .exe atau .zip/.rar
+   ❌ BUKAN: .msi atau installer Roblox
+
+4. DOWNLOAD DARI SUMBER YANG BENAR:
+   ❌ Jangan download dari link sembarangan
+   ✅ Download dari website/forum terpercaya
+   ✅ Google: "Fluxus Roblox executor download"
+   ✅ Pilih link yang terpercaya
+
+5. VERIFY SEBELUM INSTALL:
+   → Buka folder tempat file disimpan
+   → Cek nama file (harus ada "Fluxus")
+   → Cek ukuran file (5-50 MB)
+   → Jangan langsung install!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 CARA BEDAKAN FLUXUS vs ROBLOX:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FLUXUS:
+  - Nama: Fluxus.exe, Fluxus.zip
+  - Icon: Terminal/executor
+  - Saat dibuka: Interface executor (editor script)
+  - Fitur: Attach, Inject, Execute
+
+ROBLOX INSTALLER:
+  - Nama: RobloxInstaller.exe
+  - Icon: Logo Roblox
+  - Saat dibuka: Installer Roblox
+  - Fitur: Install Roblox Player
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 TIPS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Download dari browser langsung (bukan Multiget) untuk test
+2. Cek link sebelum download - jangan klik link mencurigakan
+3. Jika file selalu jadi Roblox, coba download dari sumber lain
+4. Beberapa link bisa redirect ke Roblox - hati-hati!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔄 ALTERNATIF:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Jika Fluxus susah didownload, coba executor lain:
+
+→ Krnl (Gratis, populer)
+→ Script-Ware (Mudah dipakai)
+→ Comet (Gratis)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 Panduan lengkap: Lihat CARA_DOWNLOAD_FLUXUS.md
+
+═══════════════════════════════════════════════════════════════

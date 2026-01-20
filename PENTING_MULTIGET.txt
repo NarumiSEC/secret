@@ -1,0 +1,59 @@
+═══════════════════════════════════════════════════════════════
+  ⚠️ PENTING: MULTIGET vs EXECUTOR ROBLOX
+═══════════════════════════════════════════════════════════════
+
+❌ MULTIGET YANG KAMU PAKAI = DOWNLOAD MANAGER
+   → Multiget hanya untuk download file
+   → Multiget TIDAK BISA execute script Roblox
+   → Multiget punya fitur: URL, Referer, Mirrors, Save To, Proxy
+
+✅ UNTUK EXECUTE SCRIPT ROBLOX, PERLU EXECUTOR:
+   → Script-Ware (Recommended - mudah)
+   → Krnl (Gratis, populer)
+   → Fluxus (Gratis, ringan)
+   → Synapse X (Berbayar, premium)
+   → Comet (Gratis)
+
+═══════════════════════════════════════════════════════════════
+
+📥 CARA DOWNLOAD EXECUTOR PAKAI MULTIGET:
+═══════════════════════════════════════════════════════════════
+
+1. Buka Multiget
+2. Klik "Job" → "New Job"
+3. Isi field:
+   - URL: Link download executor (Script-Ware/Krnl/Fluxus)
+   - Save To: Folder untuk save file
+4. Klik "OK" → Download selesai
+5. Install executor yang sudah didownload
+
+═══════════════════════════════════════════════════════════════
+
+🎮 CARA EXECUTE SCRIPT (SETELAH INSTALL EXECUTOR):
+═══════════════════════════════════════════════════════════════
+
+1. Buka game "Fish It" di Roblox
+2. Buka Executor (Script-Ware/Krnl/Fluxus)
+3. Attach/Inject ke Roblox
+4. Load script auto_secret_fishit.lua
+5. Execute script
+6. UI muncul di game → Klik "ENABLED"
+
+═══════════════════════════════════════════════════════════════
+
+💡 KESIMPULAN:
+═══════════════════════════════════════════════════════════════
+
+Multiget = Download Manager (untuk download executor)
+Executor = Untuk execute script Roblox
+
+Jadi:
+1. Pakai Multiget untuk DOWNLOAD executor
+2. Install executor yang sudah didownload
+3. Pakai executor untuk EXECUTE script
+
+═══════════════════════════════════════════════════════════════
+
+📖 Panduan lengkap: Lihat CARA_PAKAI.md
+
+═══════════════════════════════════════════════════════════════
