@@ -1,24 +1,37 @@
 -- narumi.lua
--- Client-side exploit test
+-- UI exploit simulator (SAFE VERSION)
 -- Script by NarumiStore
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local player = Players.LocalPlayer
+local CoreGui = game:GetService("CoreGui")
 
--- SAFETY
-if not player or not player.Character then
-    player.CharacterAdded:Wait()
+local player = Players.LocalPlayer
+if not player then return end
+
+--------------------------------------------------
+-- GUI PARENT FIX (INI YANG BIKIN JALAN DI DELTA)
+--------------------------------------------------
+local function getGuiParent()
+    if gethui then
+        return gethui()
+    end
+    return CoreGui
 end
 
---------------------------------------------------
--- GUI
---------------------------------------------------
 local gui = Instance.new("ScreenGui")
 gui.Name = "NarumiExploitUI"
 gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
 
+if syn and syn.protect_gui then
+    syn.protect_gui(gui)
+end
+
+gui.Parent = getGuiParent()
+
+--------------------------------------------------
+-- MAIN FRAME
+--------------------------------------------------
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromScale(0.36,0.56)
 main.Position = UDim2.fromScale(0.32,0.2)
@@ -66,6 +79,12 @@ content.BackgroundTransparency = 1
 --------------------------------------------------
 -- UTIL
 --------------------------------------------------
+local function clear()
+    for _,v in pairs(content:GetChildren()) do
+        if v:IsA("GuiObject") then v:Destroy() end
+    end
+end
+
 local function btn(parent,text,y)
     local b = Instance.new("TextButton", parent)
     b.Text = text
@@ -77,12 +96,6 @@ local function btn(parent,text,y)
     return b
 end
 
-local function clear()
-    for _,v in pairs(content:GetChildren()) do
-        if v:IsA("GuiObject") then v:Destroy() end
-    end
-end
-
 --------------------------------------------------
 -- SIDEBAR BUTTONS
 --------------------------------------------------
@@ -90,7 +103,7 @@ local fishingBtn = btn(side,"🎣 Fishing",10)
 local tpBtn = btn(side,"🧭 Teleport",60)
 
 --------------------------------------------------
--- FISHING (CLIENT FORCED)
+-- FISHING (SIMULASI)
 --------------------------------------------------
 fishingBtn.MouseButton1Click:Connect(function()
     clear()
@@ -99,13 +112,13 @@ fishingBtn.MouseButton1Click:Connect(function()
         local b = btn(content, fish.." Fish", y)
         y += 50
         b.MouseButton1Click:Connect(function()
-            warn("[EXPLOIT TEST] DAPET IKAN:", fish)
+            warn("[SIMULATION] Fishing request:", fish)
         end)
     end
 end)
 
 --------------------------------------------------
--- TELEPORT (MAP TERKUNCI JUGA)
+-- TELEPORT (SIMULASI)
 --------------------------------------------------
 tpBtn.MouseButton1Click:Connect(function()
     clear()
@@ -114,15 +127,7 @@ tpBtn.MouseButton1Click:Connect(function()
         local b = btn(content, map, y)
         y += 50
         b.MouseButton1Click:Connect(function()
-            local char = player.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            local maps = workspace:FindFirstChild("Maps")
-            if hrp and maps and maps:FindFirstChild(map) then
-                local spawn = maps[map]:FindFirstChild("Spawn")
-                if spawn then
-                    hrp.CFrame = spawn.CFrame
-                end
-            end
+            warn("[SIMULATION] Teleport request:", map)
         end)
     end
 end)
@@ -142,189 +147,8 @@ mini.MouseButton1Click:Connect(function()
     }):Play()
 end)
 
-print("[Narumi] Exploit test UI loaded")
-            total += chance
-            if r <= total then
-                return fish
-            end
-        end
-    end
-
-    FishEvent.OnServerEvent:Connect(function(player)
-        local result = rollFish()
-        FishEvent:FireClient(player, result)
-    end)
-
-    TeleportEvent.OnServerEvent:Connect(function(player, mapName)
-        if not player.Character then return end
-        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-        if not hrp then return end
-
-        local maps = workspace:FindFirstChild("Maps")
-        if maps and maps:FindFirstChild(mapName) then
-            local spawn = maps[mapName]:FindFirstChild("Spawn")
-            if spawn then
-                hrp.CFrame = spawn.CFrame
-            end
-        end
-    end)
-
-    print("[Narumi] Server logic loaded")
-end
-
---------------------------------------------------
--- CLIENT SIDE
---------------------------------------------------
-if RunService:IsClient() then
-    local player = Players.LocalPlayer
-    local TweenService = game:GetService("TweenService")
-
-    local FishEvent = ReplicatedStorage:WaitForChild("FishEvent")
-    local TeleportEvent = ReplicatedStorage:WaitForChild("TeleportEvent")
-
-    -- GUI
-    local gui = Instance.new("ScreenGui")
-    gui.Name = "NarumiUI"
-    gui.ResetOnSpawn = false
-    gui.Parent = player:WaitForChild("PlayerGui")
-
-    local main = Instance.new("Frame", gui)
-    main.Size = UDim2.fromScale(0.35,0.55)
-    main.Position = UDim2.fromScale(0.32,0.2)
-    main.BackgroundColor3 = Color3.fromRGB(20,20,20)
-    Instance.new("UICorner", main)
-
-    local top = Instance.new("Frame", main)
-    top.Size = UDim2.new(1,0,0,40)
-    top.BackgroundColor3 = Color3.fromRGB(30,30,30)
-    Instance.new("UICorner", top)
-
-    local title = Instance.new("TextLabel", top)
-    title.Text = "Fish It Simulator\nScript by NarumiStore"
-    title.Size = UDim2.new(1,-80,1,0)
-    title.Position = UDim2.new(0,10,0,0)
-    title.BackgroundTransparency = 1
-    title.TextColor3 = Color3.new(1,1,1)
-    title.TextXAlignment = Left
-    title.TextSize = 14
-
-    local close = Instance.new("TextButton", top)
-    close.Text = "X"
-    close.Size = UDim2.new(0,30,0,30)
-    close.Position = UDim2.new(1,-35,0,5)
-
-    local mini = Instance.new("TextButton", top)
-    mini.Text = "_"
-    mini.Size = UDim2.new(0,30,0,30)
-    mini.Position = UDim2.new(1,-70,0,5)
-
-    local side = Instance.new("Frame", main)
-    side.Size = UDim2.new(0,120,1,-40)
-    side.Position = UDim2.new(0,0,0,40)
-    side.BackgroundColor3 = Color3.fromRGB(25,25,25)
-
-    local content = Instance.new("Frame", main)
-    content.Size = UDim2.new(1,-120,1,-40)
-    content.Position = UDim2.new(0,120,0,40)
-    content.BackgroundTransparency = 1
-
-    local function btn(parent,text,y)
-        local b = Instance.new("TextButton", parent)
-        b.Text = text
-        b.Size = UDim2.new(1,-10,0,40)
-        b.Position = UDim2.new(0,5,0,y)
-        b.BackgroundColor3 = Color3.fromRGB(40,40,40)
-        b.TextColor3 = Color3.new(1,1,1)
-        Instance.new("UICorner", b)
-        return b
-    end
-
-    local function clear()
-        for _,v in pairs(content:GetChildren()) do
-            if v:IsA("GuiObject") then v:Destroy() end
-        end
-    end
-
-    local fishingBtn = btn(side,"🎣 Fishing",10)
-    local tpBtn = btn(side,"🧭 Teleport",60)
-
-    fishingBtn.MouseButton1Click:Connect(function()
-        clear()
-        local y = 10
-        for _,fish in ipairs({"Secret","Legendary","Mythic"}) do
-            local b = btn(content, fish.." Fish", y)
-            y += 50
-            b.MouseButton1Click:Connect(function()
-                FishEvent:FireServer()
-            end)
-        end
-    end)
-
-    FishEvent.OnClientEvent:Connect(function(result)
-        warn("[Narumi] DAPET IKAN:", result)
-    end)
-
-    tpBtn.MouseButton1Click:Connect(function()
-        clear()
-        local y = 10
-        for _,map in ipairs({"Island1","Island2","SecretIsland"}) do
-            local b = btn(content, map, y)
-            y += 50
-            b.MouseButton1Click:Connect(function()
-                TeleportEvent:FireServer(map)
-            end)
-        end
-    end)
-
-    close.MouseButton1Click:Connect(function()
-        gui:Destroy()
-    end)
-
-    local minimized = false
-    mini.MouseButton1Click:Connect(function()
-        minimized = not minimized
-        TweenService:Create(main, TweenInfo.new(0.25), {
-            Size = minimized and UDim2.new(0,300,0,40) or UDim2.fromScale(0.35,0.55)
-        }):Play()
-    end)
-
-    print("[Narumi] UI loaded")
-end
-title.Size = UDim2.new(1,-90,1,0)
-title.Position = UDim2.new(0,15,0,0)
-title.Text = "Fish It | Mode Selector"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 14
-title.TextColor3 = Color3.new(1,1,1)
-title.BackgroundTransparency = 1
-title.TextXAlignment = Enum.TextXAlignment.Left
-title.ZIndex = 12
-
-local function headerBtn(txt,pos,color)
-    local b = Instance.new("TextButton", header)
-    b.Size = UDim2.new(0,30,0,30)
-    b.Position = pos
-    b.Text = txt
-    b.Font = Enum.Font.GothamBold
-    b.TextSize = 16
-    b.TextColor3 = color
-    b.BackgroundColor3 = Color3.fromRGB(40,40,40)
-    b.ZIndex = 13
-    Instance.new("UICorner", b)
-    return b
-end
-
-local minBtn   = headerBtn("–",UDim2.new(1,-70,0,6),Color3.new(1,1,1))
-local closeBtn = headerBtn("X",UDim2.new(1,-35,0,6),Color3.fromRGB(255,90,90))
-
--- ================= SIDEBAR =================
-local sidebar = Instance.new("Frame", main)
-sidebar.Position = UDim2.new(0,0,0,42)
-sidebar.Size = UDim2.new(0.28,0,1,-42)
-sidebar.BackgroundColor3 = Color3.fromRGB(22,22,22)
-sidebar.ZIndex = 11
-
-local sideLayout = Instance.new("UIListLayout", sidebar)
+print("[Narumi] UI loaded (Delta compatible)")
+ar)
 sideLayout.Padding = UDim.new(0,12)
 sideLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 sideLayout.VerticalAlignment = Enum.VerticalAlignment.Top
