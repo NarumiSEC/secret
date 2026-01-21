@@ -1,72 +1,67 @@
--- AUTO SECRET FISH (DELTA SAFE VERSION)
--- Focus: RemoteEvent only
+-- AUTO FISH FAST LOOP (DELTA COMPATIBLE)
+-- Effect: roll cepat & konsisten (bukan force RNG)
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
 
+-- ====== CONFIG ======
 local ENABLED = true
-local SCAN_DELAY = 1.5
+local CAST_DELAY = 0.15      -- jeda antar cast (detik)
+local BITE_WAIT = 0.9        -- tunggu bite sebelum pull
+local PULL_DELAY = 0.1       -- jeda pull
+local LOOP_DELAY = 0.2       -- jeda antar siklus
+-- ====================
 
--- nama ikan secret (basic)
-local SECRET_KEYWORDS = {
-    "secret",
-    "legendary",
-    "mythic",
-    "ancient",
-    "kraken",
-    "leviathan",
-    "megalodon"
-}
-
--- cari RemoteEvent fishing
-local function findFishingRemote()
-    for _, v in pairs(ReplicatedStorage:GetDescendants()) do
+-- Cari RemoteEvent fishing (umum)
+local function findFishingRemotes()
+    local cast, pull
+    for _, v in ipairs(ReplicatedStorage:GetDescendants()) do
         if v:IsA("RemoteEvent") then
             local n = v.Name:lower()
-            if n:find("fish") or n:find("catch") or n:find("hook") then
-                return v
+            if (n:find("cast") or n:find("throw")) and not cast then
+                cast = v
+            elseif (n:find("pull") or n:find("reel") or n:find("catch")) and not pull then
+                pull = v
             end
         end
     end
+    return cast, pull
 end
 
-local FISH_REMOTE = findFishingRemote()
+local CAST_REMOTE, PULL_REMOTE = findFishingRemotes()
 
-if not FISH_REMOTE then
-    warn("[AUTO SECRET] Fishing Remote NOT FOUND")
+if not CAST_REMOTE or not PULL_REMOTE then
+    warn("[AUTO FISH] Remote cast/pull tidak ketemu.")
+    warn("[AUTO FISH] Coba set manual nama RemoteEvent di script.")
     return
 end
 
-print("[AUTO SECRET] Using Remote:", FISH_REMOTE.Name)
+print("[AUTO FISH] Cast:", CAST_REMOTE.Name)
+print("[AUTO FISH] Pull:", PULL_REMOTE.Name)
 
--- scan ikan secret (ringan)
-local function findSecretFish()
-    for _, obj in pairs(workspace:GetChildren()) do
-        local name = obj.Name:lower()
-        for _, key in pairs(SECRET_KEYWORDS) do
-            if name:find(key) then
-                return obj
-            end
-        end
-    end
+-- Helper aman fire server
+local function safeFire(remote, ...)
+    pcall(function()
+        remote:FireServer(...)
+    end)
 end
 
--- loop utama
+-- Loop utama
 task.spawn(function()
     while ENABLED do
-        task.wait(SCAN_DELAY)
+        -- CAST
+        safeFire(CAST_REMOTE)
+        task.wait(CAST_DELAY)
 
-        local fish = findSecretFish()
-        if fish then
-            print("[AUTO SECRET] Found:", fish.Name)
+        -- TUNGGU BITE (timing stabil biar valid)
+        task.wait(BITE_WAIT)
 
-            -- fire remote (multi attempt biar kena)
-            pcall(function()
-                FISH_REMOTE:FireServer(fish)
-                FISH_REMOTE:FireServer(fish.Name)
-                FISH_REMOTE:FireServer({target = fish})
-            end)
-        end
+        -- PULL / REEL
+        safeFire(PULL_REMOTE)
+        task.wait(PULL_DELAY)
+
+        -- ULANG CEPAT
+        task.wait(LOOP_DELAY)
     end
 end)
