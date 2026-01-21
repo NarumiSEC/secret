@@ -1,31 +1,48 @@
--- narumi.lua
--- UI exploit simulator (SAFE VERSION)
--- Script by NarumiStore
+-- Narumi Fish UI - REAL + FAST ROLL (DELTA SAFE)
+-- For DEV / TESTING in YOUR OWN GAME
+
+--------------------------------------------------
+-- LOADER FIX (WAJIB UNTUK DELTA)
+--------------------------------------------------
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
 
-local player = Players.LocalPlayer
-if not player then return end
+local player
+repeat
+    player = Players.LocalPlayer
+    task.wait()
+until player
+
+local remote = ReplicatedStorage:WaitForChild("GameAction")
 
 --------------------------------------------------
--- GUI PARENT FIX (INI YANG BIKIN JALAN DI DELTA)
+-- GUI PARENT FIX
 --------------------------------------------------
 local function getGuiParent()
-    if gethui then
+    if typeof(gethui) == "function" then
         return gethui()
     end
     return CoreGui
 end
 
+--------------------------------------------------
+-- GUI ROOT
+--------------------------------------------------
 local gui = Instance.new("ScreenGui")
 gui.Name = "NarumiExploitUI"
 gui.ResetOnSpawn = false
 
-if syn and syn.protect_gui then
-    syn.protect_gui(gui)
-end
+pcall(function()
+    if syn and syn.protect_gui then
+        syn.protect_gui(gui)
+    end
+end)
 
 gui.Parent = getGuiParent()
 
@@ -40,14 +57,16 @@ main.Active = true
 main.Draggable = true
 Instance.new("UICorner", main)
 
+--------------------------------------------------
 -- TOP BAR
+--------------------------------------------------
 local top = Instance.new("Frame", main)
 top.Size = UDim2.new(1,0,0,40)
 top.BackgroundColor3 = Color3.fromRGB(30,30,30)
 Instance.new("UICorner", top)
 
 local title = Instance.new("TextLabel", top)
-title.Text = "Fish It Simulator\nScript by NarumiStore"
+title.Text = "Fish It DEV PANEL\nNarumiStore"
 title.Size = UDim2.new(1,-80,1,0)
 title.Position = UDim2.new(0,10,0,0)
 title.BackgroundTransparency = 1
@@ -60,12 +79,9 @@ close.Text = "X"
 close.Size = UDim2.new(0,30,0,30)
 close.Position = UDim2.new(1,-35,0,5)
 
-local mini = Instance.new("TextButton", top)
-mini.Text = "_"
-mini.Size = UDim2.new(0,30,0,30)
-mini.Position = UDim2.new(1,-70,0,5)
-
--- SIDEBAR
+--------------------------------------------------
+-- SIDEBAR & CONTENT
+--------------------------------------------------
 local side = Instance.new("Frame", main)
 side.Size = UDim2.new(0,120,1,-40)
 side.Position = UDim2.new(0,0,0,40)
@@ -81,7 +97,9 @@ content.BackgroundTransparency = 1
 --------------------------------------------------
 local function clear()
     for _,v in pairs(content:GetChildren()) do
-        if v:IsA("GuiObject") then v:Destroy() end
+        if v:IsA("GuiObject") then
+            v:Destroy()
+        end
     end
 end
 
@@ -97,177 +115,44 @@ local function btn(parent,text,y)
 end
 
 --------------------------------------------------
--- SIDEBAR BUTTONS
+-- SIDEBAR BUTTON
 --------------------------------------------------
 local fishingBtn = btn(side,"🎣 Fishing",10)
-local tpBtn = btn(side,"🧭 Teleport",60)
 
 --------------------------------------------------
--- FISHING (SIMULASI)
+-- FISHING UI
 --------------------------------------------------
 fishingBtn.MouseButton1Click:Connect(function()
     clear()
     local y = 10
-    for _,fish in ipairs({"Secret","Legendary","Mythic"}) do
-        local b = btn(content, fish.." Fish", y)
-        y += 50
+
+    -- NORMAL ROLL
+    for _,rarity in ipairs({"Common","Legendary","Mythic","Secret"}) do
+        local b = btn(content, rarity.." Roll", y)
+        y += 45
+
         b.MouseButton1Click:Connect(function()
-            warn("[SIMULATION] Fishing request:", fish)
+            remote:FireServer("Fishing", rarity, 1)
         end)
     end
+
+    y += 10
+
+    -- FAST ROLL (DEV MODE)
+    local fast = btn(content,"⚡ Fast Roll (x10)", y)
+    fast.BackgroundColor3 = Color3.fromRGB(80,40,40)
+
+    fast.MouseButton1Click:Connect(function()
+        -- 1 REQUEST, BUKAN SPAM
+        remote:FireServer("Fishing", "Secret", 10)
+    end)
 end)
 
 --------------------------------------------------
--- TELEPORT (SIMULASI)
---------------------------------------------------
-tpBtn.MouseButton1Click:Connect(function()
-    clear()
-    local y = 10
-    for _,map in ipairs({"Island1","Island2","SecretIsland"}) do
-        local b = btn(content, map, y)
-        y += 50
-        b.MouseButton1Click:Connect(function()
-            warn("[SIMULATION] Teleport request:", map)
-        end)
-    end
-end)
-
---------------------------------------------------
--- CLOSE & MINIMIZE
+-- CLOSE
 --------------------------------------------------
 close.MouseButton1Click:Connect(function()
     gui:Destroy()
 end)
 
-local minimized = false
-mini.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    TweenService:Create(main, TweenInfo.new(0.25), {
-        Size = minimized and UDim2.new(0,300,0,40) or UDim2.fromScale(0.36,0.56)
-    }):Play()
-end)
-
-print("[Narumi] UI loaded (Delta compatible)")
-ar)
-sideLayout.Padding = UDim.new(0,12)
-sideLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-sideLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-
-local sidePad = Instance.new("UIPadding", sidebar)
-sidePad.PaddingTop = UDim.new(0,15)
-
--- ================= CONTENT =================
-local content = Instance.new("ScrollingFrame", main)
-content.Position = UDim2.new(0.28,0,0,42)
-content.Size = UDim2.new(0.72,0,1,-42)
-content.CanvasSize = UDim2.new(0,0,0,0)
-content.AutomaticCanvasSize = Enum.AutomaticSize.Y
-content.ScrollBarImageTransparency = 1
-content.BackgroundTransparency = 1
-content.ZIndex = 11
-
-local layout = Instance.new("UIListLayout", content)
-layout.Padding = UDim.new(0,12)
-layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-layout.VerticalAlignment = Enum.VerticalAlignment.Top
-
-local pad = Instance.new("UIPadding", content)
-pad.PaddingTop = UDim.new(0,15)
-
--- ================= UI UTILS =================
-local function makeBtn(parent,text)
-    local b = Instance.new("TextButton", parent)
-    b.Size = UDim2.new(0.9,0,0,36)
-    b.Text = text
-    b.Font = Enum.Font.Gotham
-    b.TextSize = 13
-    b.TextColor3 = Color3.new(1,1,1)
-    b.BackgroundColor3 = Color3.fromRGB(40,40,40)
-    b.ZIndex = 12
-    Instance.new("UICorner", b)
-    return b
-end
-
--- ================= MODE DROPDOWN =================
-local currentMode = "Secret"
-local modeBtn = makeBtn(content,"Mode : Secret")
-
-local modeOpen = false
-local modes = {"Secret","Legendary","Mythic"}
-local modeBtns = {}
-
-for _,m in ipairs(modes) do
-    local b = makeBtn(content,"→ "..m)
-    b.Visible = false
-    b.MouseButton1Click:Connect(function()
-        currentMode = m
-        modeBtn.Text = "Mode : "..m
-        for _,x in pairs(modeBtns) do x.Visible = false end
-        modeOpen = false
-    end)
-    table.insert(modeBtns,b)
-end
-
-modeBtn.MouseButton1Click:Connect(function()
-    modeOpen = not modeOpen
-    for _,b in pairs(modeBtns) do
-        b.Visible = modeOpen
-    end
-end)
-
--- ================= MAP DROPDOWN =================
-local currentMap = "None"
-local mapBtn = makeBtn(content,"Map : Select")
-
-local maps = {
-    ["Lost Isle"] = CFrame.new(2200,30,-500),
-    ["Coral Reefs"] = CFrame.new(1200,15,800),
-    ["Tropical Grove"] = CFrame.new(-900,20,1400),
-    ["Fisherman Island"] = CFrame.new(0,10,0)
-}
-
-local mapOpen = false
-local mapBtns = {}
-
-for name,cf in pairs(maps) do
-    local b = makeBtn(content,"→ "..name)
-    b.Visible = false
-    b.MouseButton1Click:Connect(function()
-        currentMap = name
-        mapBtn.Text = "Map : "..name
-        lp.Character:WaitForChild("HumanoidRootPart").CFrame = cf
-        for _,x in pairs(mapBtns) do x.Visible = false end
-        mapOpen = false
-    end)
-    table.insert(mapBtns,b)
-end
-
-mapBtn.MouseButton1Click:Connect(function()
-    mapOpen = not mapOpen
-    for _,b in pairs(mapBtns) do
-        b.Visible = mapOpen
-    end
-end)
-
--- ================= INFO =================
-local info = Instance.new("TextLabel", content)
-info.Size = UDim2.new(0.9,0,0,60)
-info.TextWrapped = true
-info.Text = "INFO:\nMode dipakai sebagai FOCUS & LOG.\nChance ditentukan server."
-info.Font = Enum.Font.Gotham
-info.TextSize = 12
-info.TextColor3 = Color3.fromRGB(180,180,180)
-info.BackgroundTransparency = 1
-
--- ================= WINDOW CONTROL =================
-local minimized = false
-local fullSize = main.Size
-
-minBtn.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    main.Size = minimized and UDim2.new(fullSize.X.Scale,0,0,42) or fullSize
-end)
-
-closeBtn.MouseButton1Click:Connect(function()
-    gui:Destroy()
-end)
+print("[Narumi] UI Loaded | Fast Roll Ready")
