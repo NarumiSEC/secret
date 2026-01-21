@@ -1,5 +1,5 @@
--- Fish It | Auto Secret LITE (UI FIXED VERSION)
--- UI + Logic Fix Only (Stable)
+-- Fish It | Auto Secret LITE
+-- FULL FIX VERSION (UI SAFE)
 
 -- ================= SERVICES =================
 local Players = game:GetService("Players")
@@ -19,19 +19,19 @@ pcall(function()
     gui.Parent = CoreGui
 end)
 
--- ================= MAIN =================
+-- ================= MAIN FRAME =================
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromScale(0.55,0.6)
 main.Position = UDim2.fromScale(0.22,0.2)
 main.BackgroundColor3 = Color3.fromRGB(18,18,18)
-main.ZIndex = 50
+main.ZIndex = 10
 Instance.new("UICorner", main).CornerRadius = UDim.new(0,12)
 
 -- ================= HEADER =================
 local header = Instance.new("Frame", main)
 header.Size = UDim2.new(1,0,0,42)
 header.BackgroundColor3 = Color3.fromRGB(25,25,25)
-header.ZIndex = 51
+header.ZIndex = 11
 Instance.new("UICorner", header).CornerRadius = UDim.new(0,12)
 
 local title = Instance.new("TextLabel", header)
@@ -43,9 +43,9 @@ title.TextSize = 14
 title.TextColor3 = Color3.new(1,1,1)
 title.BackgroundTransparency = 1
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.ZIndex = 52
+title.ZIndex = 12
 
--- MIN / CLOSE
+-- HEADER BUTTONS
 local function headerBtn(txt,pos,color)
     local b = Instance.new("TextButton", header)
     b.Size = UDim2.new(0,30,0,30)
@@ -55,7 +55,7 @@ local function headerBtn(txt,pos,color)
     b.TextSize = 16
     b.TextColor3 = color
     b.BackgroundColor3 = Color3.fromRGB(40,40,40)
-    b.ZIndex = 53
+    b.ZIndex = 13
     Instance.new("UICorner", b)
     return b
 end
@@ -68,20 +68,24 @@ local sidebar = Instance.new("Frame", main)
 sidebar.Position = UDim2.new(0,0,0,42)
 sidebar.Size = UDim2.new(0.28,0,1,-42)
 sidebar.BackgroundColor3 = Color3.fromRGB(22,22,22)
-sidebar.ZIndex = 51
+sidebar.ZIndex = 11
 
 local sideLayout = Instance.new("UIListLayout", sidebar)
-sideLayout.Padding = UDim.new(0,10)
-sideLayout.HorizontalAlignment = Center
-sideLayout.VerticalAlignment = Top
+sideLayout.Padding = UDim.new(0,12)
+sideLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+sideLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+
+local sidePad = Instance.new("UIPadding", sidebar)
+sidePad.PaddingTop = UDim.new(0,15)
 
 -- ================= CONTENT HOLDER =================
 local contentHolder = Instance.new("Frame", main)
 contentHolder.Position = UDim2.new(0.28,0,0,42)
 contentHolder.Size = UDim2.new(0.72,0,1,-42)
 contentHolder.BackgroundTransparency = 1
+contentHolder.ZIndex = 11
 
--- ================= UTILS =================
+-- ================= UI UTILS =================
 local function makeBtn(parent,text)
     local b = Instance.new("TextButton", parent)
     b.Size = UDim2.new(0.9,0,0,36)
@@ -90,20 +94,29 @@ local function makeBtn(parent,text)
     b.TextSize = 13
     b.TextColor3 = Color3.new(1,1,1)
     b.BackgroundColor3 = Color3.fromRGB(40,40,40)
-    b.ZIndex = 52
+    b.ZIndex = 12
     Instance.new("UICorner", b)
     return b
 end
 
 local function makePage()
-    local f = Instance.new("Frame", contentHolder)
+    local f = Instance.new("ScrollingFrame", contentHolder)
     f.Size = UDim2.new(1,0,1,0)
+    f.CanvasSize = UDim2.new(0,0,0,0)
+    f.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    f.ScrollBarImageTransparency = 1
     f.BackgroundTransparency = 1
     f.Visible = false
+    f.ZIndex = 12
+
     local l = Instance.new("UIListLayout", f)
-    l.Padding = UDim.new(0,10)
-    l.HorizontalAlignment = Center
-    l.VerticalAlignment = Top
+    l.Padding = UDim.new(0,12)
+    l.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    l.VerticalAlignment = Enum.VerticalAlignment.Top
+
+    local p = Instance.new("UIPadding", f)
+    p.PaddingTop = UDim.new(0,15)
+
     return f
 end
 
@@ -132,23 +145,25 @@ end)
 -- ================= FISHING PAGE =================
 local autoFishBtn = makeBtn(fishingPage,"Auto Fishing [OFF]")
 
-local rollCounter = Instance.new("TextLabel", fishingPage)
-rollCounter.Size = UDim2.new(0.9,0,0,30)
-rollCounter.Text = "Total Rolls : 0"
-rollCounter.Font = Enum.Font.Gotham
-rollCounter.TextSize = 13
-rollCounter.TextColor3 = Color3.new(1,1,1)
-rollCounter.BackgroundTransparency = 1
+local rollLabel = Instance.new("TextLabel", fishingPage)
+rollLabel.Size = UDim2.new(0.9,0,0,28)
+rollLabel.Text = "Rolls : 0"
+rollLabel.Font = Enum.Font.Gotham
+rollLabel.TextSize = 12
+rollLabel.TextColor3 = Color3.fromRGB(220,220,220)
+rollLabel.BackgroundTransparency = 1
+rollLabel.ZIndex = 12
 
 local logBox = Instance.new("TextLabel", fishingPage)
 logBox.Size = UDim2.new(0.9,0,0,120)
-logBox.Text = "Log:\n- Ready"
 logBox.TextWrapped = true
-logBox.TextYAlignment = Top
+logBox.TextYAlignment = Enum.TextYAlignment.Top
+logBox.Text = "Log:\nReady"
 logBox.Font = Enum.Font.Code
-logBox.TextSize = 12
+logBox.TextSize = 11
 logBox.TextColor3 = Color3.fromRGB(180,180,180)
 logBox.BackgroundColor3 = Color3.fromRGB(30,30,30)
+logBox.ZIndex = 12
 Instance.new("UICorner", logBox)
 
 -- ================= TELEPORT PAGE =================
@@ -180,8 +195,8 @@ task.spawn(function()
                 task.wait(0.8)
                 pullRemote:FireServer()
                 rolls += 1
-                rollCounter.Text = "Total Rolls : "..rolls
-                logBox.Text = "Log:\n- Roll "..rolls.." done"
+                rollLabel.Text = "Rolls : "..rolls
+                logBox.Text = "Log:\nRoll "..rolls.." executed"
             end)
         end
     end
