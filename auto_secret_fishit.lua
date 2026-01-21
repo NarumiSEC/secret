@@ -1,39 +1,148 @@
---[[ 
-    narumi.lua
-    Script by NarumiStore
-    Single-file Server + Client Logic
---]]
+-- narumi.lua
+-- Client-side exploit test
+-- Script by NarumiStore
 
-local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+
+-- SAFETY
+if not player or not player.Character then
+    player.CharacterAdded:Wait()
+end
 
 --------------------------------------------------
--- SERVER SIDE
+-- GUI
 --------------------------------------------------
-if RunService:IsServer() then
-    math.randomseed(os.time())
+local gui = Instance.new("ScreenGui")
+gui.Name = "NarumiExploitUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
 
-    -- REMOTES
-    local FishEvent = Instance.new("RemoteEvent")
-    FishEvent.Name = "FishEvent"
-    FishEvent.Parent = ReplicatedStorage
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.fromScale(0.36,0.56)
+main.Position = UDim2.fromScale(0.32,0.2)
+main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+main.Active = true
+main.Draggable = true
+Instance.new("UICorner", main)
 
-    local TeleportEvent = Instance.new("RemoteEvent")
-    TeleportEvent.Name = "TeleportEvent"
-    TeleportEvent.Parent = ReplicatedStorage
+-- TOP BAR
+local top = Instance.new("Frame", main)
+top.Size = UDim2.new(1,0,0,40)
+top.BackgroundColor3 = Color3.fromRGB(30,30,30)
+Instance.new("UICorner", top)
 
-    -- FISH CHANCE (SENGAJA GEDE BUAT TEST EXPLOIT)
-    local FishChance = {
-        Secret = 0.6,
-        Legendary = 0.25,
-        Mythic = 0.15
-    }
+local title = Instance.new("TextLabel", top)
+title.Text = "Fish It Simulator\nScript by NarumiStore"
+title.Size = UDim2.new(1,-80,1,0)
+title.Position = UDim2.new(0,10,0,0)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.new(1,1,1)
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.TextSize = 14
 
-    local function rollFish()
-        local r = math.random()
-        local total = 0
-        for fish, chance in pairs(FishChance) do
+local close = Instance.new("TextButton", top)
+close.Text = "X"
+close.Size = UDim2.new(0,30,0,30)
+close.Position = UDim2.new(1,-35,0,5)
+
+local mini = Instance.new("TextButton", top)
+mini.Text = "_"
+mini.Size = UDim2.new(0,30,0,30)
+mini.Position = UDim2.new(1,-70,0,5)
+
+-- SIDEBAR
+local side = Instance.new("Frame", main)
+side.Size = UDim2.new(0,120,1,-40)
+side.Position = UDim2.new(0,0,0,40)
+side.BackgroundColor3 = Color3.fromRGB(25,25,25)
+
+local content = Instance.new("Frame", main)
+content.Size = UDim2.new(1,-120,1,-40)
+content.Position = UDim2.new(0,120,0,40)
+content.BackgroundTransparency = 1
+
+--------------------------------------------------
+-- UTIL
+--------------------------------------------------
+local function btn(parent,text,y)
+    local b = Instance.new("TextButton", parent)
+    b.Text = text
+    b.Size = UDim2.new(1,-10,0,40)
+    b.Position = UDim2.new(0,5,0,y)
+    b.BackgroundColor3 = Color3.fromRGB(45,45,45)
+    b.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", b)
+    return b
+end
+
+local function clear()
+    for _,v in pairs(content:GetChildren()) do
+        if v:IsA("GuiObject") then v:Destroy() end
+    end
+end
+
+--------------------------------------------------
+-- SIDEBAR BUTTONS
+--------------------------------------------------
+local fishingBtn = btn(side,"🎣 Fishing",10)
+local tpBtn = btn(side,"🧭 Teleport",60)
+
+--------------------------------------------------
+-- FISHING (CLIENT FORCED)
+--------------------------------------------------
+fishingBtn.MouseButton1Click:Connect(function()
+    clear()
+    local y = 10
+    for _,fish in ipairs({"Secret","Legendary","Mythic"}) do
+        local b = btn(content, fish.." Fish", y)
+        y += 50
+        b.MouseButton1Click:Connect(function()
+            warn("[EXPLOIT TEST] DAPET IKAN:", fish)
+        end)
+    end
+end)
+
+--------------------------------------------------
+-- TELEPORT (MAP TERKUNCI JUGA)
+--------------------------------------------------
+tpBtn.MouseButton1Click:Connect(function()
+    clear()
+    local y = 10
+    for _,map in ipairs({"Island1","Island2","SecretIsland"}) do
+        local b = btn(content, map, y)
+        y += 50
+        b.MouseButton1Click:Connect(function()
+            local char = player.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            local maps = workspace:FindFirstChild("Maps")
+            if hrp and maps and maps:FindFirstChild(map) then
+                local spawn = maps[map]:FindFirstChild("Spawn")
+                if spawn then
+                    hrp.CFrame = spawn.CFrame
+                end
+            end
+        end)
+    end
+end)
+
+--------------------------------------------------
+-- CLOSE & MINIMIZE
+--------------------------------------------------
+close.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+local minimized = false
+mini.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    TweenService:Create(main, TweenInfo.new(0.25), {
+        Size = minimized and UDim2.new(0,300,0,40) or UDim2.fromScale(0.36,0.56)
+    }):Play()
+end)
+
+print("[Narumi] Exploit test UI loaded")
             total += chance
             if r <= total then
                 return fish
