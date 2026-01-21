@@ -1,153 +1,115 @@
--- Fish It | Mode Selector UI
--- Delta Executor SAFE BASE
+if not game:IsLoaded() then game.Loaded:Wait() end
 
--- ================= LOAD SAFE =================
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
-
--- ================= SERVICES =================
+-- SERVICES
 local Players = game:GetService("Players")
+local RS = game:GetService("ReplicatedStorage")
 local CoreGui = game:GetService("CoreGui")
 
--- WAIT PLAYER (INI PENTING)
-local lp
-repeat
-    lp = Players.LocalPlayer
-    task.wait()
-until lp
+local Remotes = RS:WaitForChild("Remotes")
+local lp = Players.LocalPlayer
 
--- GUI PARENT FIX (DELTA)
+-- GUI PARENT
 local function getGuiParent()
-    if typeof(gethui) == "function" then
-        return gethui()
-    end
     return CoreGui
 end
 
--- ================= UI INIT =================
+-- GUI
 local gui = Instance.new("ScreenGui")
-gui.Name = "FishIt_Mode_UI"
+gui.Name = "FishIt_UI"
 gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = getGuiParent()
 
--- ================= MAIN =================
+-- MAIN
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromScale(0.55,0.6)
 main.Position = UDim2.fromScale(0.22,0.2)
 main.BackgroundColor3 = Color3.fromRGB(18,18,18)
-main.ZIndex = 10
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,12)
+main.Active = true
+main.Draggable = true
+Instance.new("UICorner", main)
 
--- ================= HEADER =================
+-- HEADER
 local header = Instance.new("Frame", main)
-header.Size = UDim2.new(1,0,0,42)
+header.Size = UDim2.new(1,0,0,40)
 header.BackgroundColor3 = Color3.fromRGB(25,25,25)
-header.ZIndex = 11
-Instance.new("UICorner", header).CornerRadius = UDim.new(0,12)
+Instance.new("UICorner", header)
 
 local title = Instance.new("TextLabel", header)
-title.Size = UDim2.new(1,-90,1,0)
-title.Position = UDim2.new(0,15,0,0)
-title.Text = "Fish It | Mode Selector"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 14
-title.TextColor3 = Color3.new(1,1,1)
+title.Text = "Fish It | Narumi UI"
+title.Size = UDim2.new(1,-80,1,0)
+title.Position = UDim2.new(0,10,0,0)
 title.BackgroundTransparency = 1
+title.TextColor3 = Color3.new(1,1,1)
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.ZIndex = 12
 
-local function headerBtn(txt,pos,color)
-    local b = Instance.new("TextButton", header)
-    b.Size = UDim2.new(0,30,0,30)
-    b.Position = pos
-    b.Text = txt
-    b.Font = Enum.Font.GothamBold
-    b.TextSize = 16
-    b.TextColor3 = color
-    b.BackgroundColor3 = Color3.fromRGB(40,40,40)
-    b.ZIndex = 13
-    Instance.new("UICorner", b)
-    return b
-end
+local close = Instance.new("TextButton", header)
+close.Text = "X"
+close.Size = UDim2.new(0,30,0,30)
+close.Position = UDim2.new(1,-35,0,5)
 
-local minBtn   = headerBtn("–",UDim2.new(1,-70,0,6),Color3.new(1,1,1))
-local closeBtn = headerBtn("X",UDim2.new(1,-35,0,6),Color3.fromRGB(255,90,90))
+-- SIDEBAR
+local sidebar = Instance.new("Frame", main)
+sidebar.Size = UDim2.new(0,130,1,-40)
+sidebar.Position = UDim2.new(0,0,0,40)
+sidebar.BackgroundColor3 = Color3.fromRGB(22,22,22)
 
--- ================= CONTENT =================
-local content = Instance.new("ScrollingFrame", main)
-content.Position = UDim2.new(0,0,0,42)
-content.Size = UDim2.new(1,0,1,-42)
-content.AutomaticCanvasSize = Enum.AutomaticSize.Y
-content.ScrollBarImageTransparency = 1
+-- CONTENT
+local content = Instance.new("Frame", main)
+content.Size = UDim2.new(1,-130,1,-40)
+content.Position = UDim2.new(0,130,0,40)
 content.BackgroundTransparency = 1
 
-local layout = Instance.new("UIListLayout", content)
-layout.Padding = UDim.new(0,12)
-layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+-- UTILS
+local function clear()
+    for _,v in pairs(content:GetChildren()) do
+        if v:IsA("GuiObject") then v:Destroy() end
+    end
+end
 
-local pad = Instance.new("UIPadding", content)
-pad.PaddingTop = UDim.new(0,15)
-
-local function makeBtn(text)
-    local b = Instance.new("TextButton", content)
-    b.Size = UDim2.new(0.9,0,0,36)
+local function button(parent,text,y)
+    local b = Instance.new("TextButton", parent)
     b.Text = text
-    b.Font = Enum.Font.Gotham
-    b.TextSize = 13
+    b.Size = UDim2.new(1,-10,0,40)
+    b.Position = UDim2.new(0,5,0,y)
+    b.BackgroundColor3 = Color3.fromRGB(45,45,45)
     b.TextColor3 = Color3.new(1,1,1)
-    b.BackgroundColor3 = Color3.fromRGB(40,40,40)
     Instance.new("UICorner", b)
     return b
 end
 
--- ================= MODE =================
-local currentMode = "Secret"
-local modeBtn = makeBtn("Mode : Secret")
+-- SIDEBAR BUTTONS
+local fishingBtn = button(sidebar,"🎣 Fishing",10)
+local rollBtn    = button(sidebar,"⚡ Fast Roll",60)
 
-local modes = {"Secret","Legendary","Mythic"}
-local modeBtns = {}
-local open = false
-
-for _,m in ipairs(modes) do
-    local b = makeBtn("→ "..m)
-    b.Visible = false
-    b.MouseButton1Click:Connect(function()
-        currentMode = m
-        modeBtn.Text = "Mode : "..m
-        for _,x in pairs(modeBtns) do x.Visible = false end
-        open = false
-    end)
-    table.insert(modeBtns,b)
-end
-
-modeBtn.MouseButton1Click:Connect(function()
-    open = not open
-    for _,b in pairs(modeBtns) do
-        b.Visible = open
+-- FISHING
+fishingBtn.MouseButton1Click:Connect(function()
+    clear()
+    local y = 10
+    for _,mode in ipairs({"Secret","Legendary","Mythic"}) do
+        local b = button(content,mode.." Fish",y)
+        y += 50
+        b.MouseButton1Click:Connect(function()
+            Remotes.Fish:FireServer(mode)
+        end)
     end
 end)
 
--- ================= PLACEHOLDER LOGIC =================
--- ⬇⬇⬇
--- TEMPEL CODE LAMA LU DI SINI
--- fast roll / fishing logic / hook remote
--- JANGAN BIKIN UI DI ATAS LAGI
--- ⬆⬆⬆
+-- FAST ROLL
+rollBtn.MouseButton1Click:Connect(function()
+    clear()
+    local info = Instance.new("TextLabel", content)
+    info.Size = UDim2.new(1,-20,0,60)
+    info.Position = UDim2.new(0,10,0,10)
+    info.Text = "Fast Roll ACTIVE"
+    info.TextColor3 = Color3.new(1,1,1)
+    info.BackgroundTransparency = 1
 
--- ================= WINDOW CONTROL =================
-local minimized = false
-local fullSize = main.Size
-
-minBtn.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    main.Size = minimized and UDim2.new(fullSize.X.Scale,0,0,42) or fullSize
+    Remotes.FastRoll:FireServer()
 end)
 
-closeBtn.MouseButton1Click:Connect(function()
+-- CLOSE
+close.MouseButton1Click:Connect(function()
     gui:Destroy()
 end)
 
-print("[FishIt] UI Loaded Successfully")
+print("[FishIt] UI LOADED (SERVER BASED)")
