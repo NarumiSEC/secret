@@ -1,15 +1,13 @@
--- Fish It | Full UI + Sidebar + Fast Roll
+-- Fish It | Full UI + Fast Roll + Multi Cast + REAL TELEPORT
 -- Delta Executor SAFE
+-- NO AUTO STOP
 
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 -- SERVICES
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
-local TweenService = game:GetService("TweenService")
-
-local lp
-repeat lp = Players.LocalPlayer task.wait() until lp
+local lp = Players.LocalPlayer
 
 -- GUI PARENT
 local function getGuiParent()
@@ -19,134 +17,182 @@ local function getGuiParent()
     return CoreGui
 end
 
--- GUI
-local gui = Instance.new("ScreenGui")
+-- ================= STATE =================
+local FastRoll = false
+local MultiCast = false
+
+-- ================= GUI =================
+local gui = Instance.new("ScreenGui", getGuiParent())
 gui.Name = "FishIt_UI"
 gui.ResetOnSpawn = false
-gui.Parent = getGuiParent()
 
--- MAIN
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromScale(0.55,0.6)
-main.Position = UDim2.fromScale(0.22,0.2)
+main.Size = UDim2.fromScale(0.38,0.45)
+main.Position = UDim2.fromScale(0.31,0.25)
 main.BackgroundColor3 = Color3.fromRGB(18,18,18)
 main.Active = true
 main.Draggable = true
-Instance.new("UICorner", main)
 
 -- HEADER
 local header = Instance.new("Frame", main)
 header.Size = UDim2.new(1,0,0,40)
 header.BackgroundColor3 = Color3.fromRGB(25,25,25)
-Instance.new("UICorner", header)
 
 local title = Instance.new("TextLabel", header)
-title.Text = "Fish It | Narumi UI"
-title.Size = UDim2.new(1,-80,1,0)
+title.Size = UDim2.new(1,-60,1,0)
 title.Position = UDim2.new(0,10,0,0)
-title.BackgroundTransparency = 1
+title.Text = "Fish It | Narumi"
 title.TextColor3 = Color3.new(1,1,1)
-title.TextXAlignment = Enum.TextXAlignment.Left
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
 
 local close = Instance.new("TextButton", header)
+close.Size = UDim2.new(0,40,1,0)
+close.Position = UDim2.new(1,-40,0,0)
 close.Text = "X"
-close.Size = UDim2.new(0,30,0,30)
-close.Position = UDim2.new(1,-35,0,5)
+close.BackgroundColor3 = Color3.fromRGB(150,50,50)
 
 -- SIDEBAR
 local sidebar = Instance.new("Frame", main)
-sidebar.Size = UDim2.new(0,130,1,-40)
+sidebar.Size = UDim2.new(0,140,1,-40)
 sidebar.Position = UDim2.new(0,0,0,40)
 sidebar.BackgroundColor3 = Color3.fromRGB(22,22,22)
 
 -- CONTENT
 local content = Instance.new("Frame", main)
-content.Size = UDim2.new(1,-130,1,-40)
-content.Position = UDim2.new(0,130,0,40)
+content.Size = UDim2.new(1,-140,1,-40)
+content.Position = UDim2.new(0,140,0,40)
 content.BackgroundTransparency = 1
 
--- UTILS
+-- ================= UTILS =================
 local function clear()
     for _,v in pairs(content:GetChildren()) do
-        if v:IsA("GuiObject") then v:Destroy() end
+        if v:IsA("GuiObject") then
+            v:Destroy()
+        end
     end
 end
 
-local function button(parent,text,y)
+local function button(parent,text,y,cb)
     local b = Instance.new("TextButton", parent)
+    b.Size = UDim2.new(1,-20,0,38)
+    b.Position = UDim2.new(0,10,0,y)
     b.Text = text
-    b.Size = UDim2.new(1,-10,0,40)
-    b.Position = UDim2.new(0,5,0,y)
-    b.BackgroundColor3 = Color3.fromRGB(45,45,45)
+    b.BackgroundColor3 = Color3.fromRGB(40,40,40)
     b.TextColor3 = Color3.new(1,1,1)
-    Instance.new("UICorner", b)
+    b.Font = Enum.Font.Gotham
+    b.MouseButton1Click:Connect(cb)
     return b
 end
 
--- SIDEBAR BUTTONS
-local fishingBtn = button(sidebar,"🎣 Fishing",10)
-local tpBtn      = button(sidebar,"🧭 Teleport",60)
-local rollBtn    = button(sidebar,"⚡ Fast Roll",110)
-
--- ================= FISHING =================
-fishingBtn.MouseButton1Click:Connect(function()
-    clear()
-    local y = 10
-    for _,mode in ipairs({"Secret","Legendary","Mythic"}) do
-        local b = button(content,mode.." Fish",y)
-        y += 50
-        b.MouseButton1Click:Connect(function()
-            print("[Fishing] Mode:",mode)
-            -- TEMPAT PANGGIL REMOTE SERVER LU
-        end)
-    end
-end)
-
--- ================= TELEPORT =================
-tpBtn.MouseButton1Click:Connect(function()
-    clear()
-    local maps = {
-        ["Island 1"] = CFrame.new(0,10,0),
-        ["Island 2"] = CFrame.new(500,10,500),
-        ["Secret"]   = CFrame.new(1000,10,-500)
-    }
-
-    local y = 10
-    for name,cf in pairs(maps) do
-        local b = button(content,name,y)
-        y += 50
-        b.MouseButton1Click:Connect(function()
-            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                hrp.CFrame = cf
-            end
-        end)
-    end
-end)
-
--- ================= FAST ROLL =================
-rollBtn.MouseButton1Click:Connect(function()
+-- ================= SIDEBAR =================
+button(sidebar,"🎣 Fishing",10,function()
     clear()
 
-    local info = Instance.new("TextLabel", content)
-    info.Size = UDim2.new(1,-20,0,60)
-    info.Position = UDim2.new(0,10,0,10)
-    info.Text = "Fast Roll ACTIVE\n(Client spam request)"
-    info.TextColor3 = Color3.new(1,1,1)
-    info.BackgroundTransparency = 1
+    button(content,"Fast Roll : "..(FastRoll and "ON" or "OFF"),10,function()
+        FastRoll = not FastRoll
+    end)
 
-    -- SIMULASI FAST LOOP (REAL JIKA SERVER ADA)
-    task.spawn(function()
-        while task.wait(0.1) do
-            -- GANTI INI DENGAN RemoteEvent:FireServer()
-            print("[FAST ROLL] request sent")
-        end
+    button(content,"Multi Cast (5x) : "..(MultiCast and "ON" or "OFF"),55,function()
+        MultiCast = not MultiCast
     end)
 end)
 
--- CLOSE
+-- ================= TELEPORT LOGIC =================
+local MAP_NAMES = {
+    "acient jungle","acient jungle outside","acient ruin","coral reefs",
+    "creter island ground","creter island top","crystal depths",
+    "crystaline pessage","esoteric deep","fishermand island",
+    "kohana spot 1","kohana spot 2","kohana volcano",
+    "leviatan den","lost shore","pirate cove",
+    "pirate treasure room","secred temple","secret pessege",
+    "sisyphus statue","tropical grove","tropical grove cave",
+    "underground cellar","weater machine"
+}
+
+-- Cari spawn REAL
+local function findRealSpawn(mapName)
+    mapName = mapName:lower()
+
+    for _,obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") or obj:IsA("Folder") then
+            if obj.Name:lower():find(mapName) then
+
+                -- 1. SpawnLocation
+                for _,v in ipairs(obj:GetDescendants()) do
+                    if v:IsA("SpawnLocation") then
+                        return v.CFrame + Vector3.new(0,5,0)
+                    end
+                end
+
+                -- 2. PrimaryPart
+                if obj:IsA("Model") and obj.PrimaryPart then
+                    return obj.PrimaryPart.CFrame + Vector3.new(0,5,0)
+                end
+
+                -- 3. Part terbesar
+                local biggest, size = nil, 0
+                for _,v in ipairs(obj:GetDescendants()) do
+                    if v:IsA("BasePart") then
+                        local vol = v.Size.X * v.Size.Y * v.Size.Z
+                        if vol > size then
+                            size = vol
+                            biggest = v
+                        end
+                    end
+                end
+                if biggest then
+                    return biggest.CFrame + Vector3.new(0,5,0)
+                end
+            end
+        end
+    end
+end
+
+-- ================= TELEPORT MENU =================
+button(sidebar,"🧭 Teleport",55,function()
+    clear()
+    local y = 10
+
+    for _,name in ipairs(MAP_NAMES) do
+        button(content,name,y,function()
+            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local cf = findRealSpawn(name)
+                if cf then
+                    hrp.CFrame = cf
+                    print("[TP] Success:",name)
+                else
+                    warn("[TP] Map not found:",name)
+                end
+            end
+        end)
+        y += 40
+    end
+end)
+
+-- ================= CORE LOOP =================
+task.spawn(function()
+    while task.wait(0.05) do
+        if FastRoll then
+            print("[FAST ROLL]")
+            -- RemoteCast:FireServer()
+            -- RemoteAccept:FireServer()
+        end
+
+        if MultiCast then
+            for i=1,5 do
+                print("[MULTI CAST]",i)
+                -- RemoteCast:FireServer()
+                -- RemoteAccept:FireServer()
+                task.wait(0.03)
+            end
+        end
+    end
+end)
+
 close.MouseButton1Click:Connect(function()
     gui:Destroy()
 end)
 
-print("[FishIt] FULL UI LOADED")
+print("[FishIt] REAL TELEPORT + FAST ROLL LOADED")
