@@ -1,30 +1,24 @@
--- Fish It | Chloe-Style UI (SAFE TEST VERSION)
--- For Testing / Own Game Only
--- Delta Executor Friendly
+-- Fish It | Chloe-Style UI (FIXED SCROLL + TP SYSTEM)
+-- CLIENT ONLY | DELTA FRIENDLY
 
 if not game:IsLoaded() then game.Loaded:Wait() end
 
--- SERVICES
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local lp = Players.LocalPlayer
 
 -- GUI PARENT
 local function getGuiParent()
-    if typeof(gethui) == "function" then
-        return gethui()
-    end
-    return CoreGui
+    return typeof(gethui) == "function" and gethui() or CoreGui
 end
 
 -- GUI
 local gui = Instance.new("ScreenGui")
-gui.Name = "FishIt_ChloeStyle"
+gui.Name = "FishIt_Chloe_Fixed"
 gui.ResetOnSpawn = false
 gui.Parent = getGuiParent()
 
--- MAIN FRAME
+-- MAIN
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromScale(0.55,0.6)
 main.Position = UDim2.fromScale(0.22,0.2)
@@ -40,7 +34,7 @@ header.BackgroundColor3 = Color3.fromRGB(28,28,28)
 Instance.new("UICorner", header)
 
 local title = Instance.new("TextLabel", header)
-title.Text = "Fish It | Chloe Style (TEST)"
+title.Text = "Fish It | Chloe Style"
 title.Size = UDim2.new(1,-90,1,0)
 title.Position = UDim2.new(0,10,0,0)
 title.BackgroundTransparency = 1
@@ -64,20 +58,18 @@ content.Size = UDim2.new(1,-150,1,-40)
 content.Position = UDim2.new(0,150,0,40)
 content.BackgroundTransparency = 1
 
--- UTILS
+-- CLEAR
 local function clear()
     for _,v in pairs(content:GetChildren()) do
-        if v:IsA("GuiObject") then
-            v:Destroy()
-        end
+        v:Destroy()
     end
 end
 
-local function button(parent,text,y)
+-- BUTTON
+local function button(parent,text)
     local b = Instance.new("TextButton", parent)
     b.Text = text
     b.Size = UDim2.new(1,-10,0,40)
-    b.Position = UDim2.new(0,5,0,y)
     b.BackgroundColor3 = Color3.fromRGB(45,45,45)
     b.TextColor3 = Color3.new(1,1,1)
     Instance.new("UICorner", b)
@@ -85,129 +77,82 @@ local function button(parent,text,y)
 end
 
 -- SIDEBAR BUTTONS
-local fishingBtn = button(sidebar,"🎣 Fishing",10)
-local tpBtn      = button(sidebar,"🧭 Teleport",60)
-local rollBtn    = button(sidebar,"⚡ Fast Roll",110)
+local fishingBtn = button(sidebar,"🎣 Fishing")
+fishingBtn.Position = UDim2.new(0,5,0,10)
 
--------------------------------------------------
--- ⚡ FAST ROLL + FAST CAST (CLIENT SIDE)
--------------------------------------------------
-local FastRoll = false
-local FastCast = false
+local tpBtn = button(sidebar,"🧭 Teleport")
+tpBtn.Position = UDim2.new(0,5,0,60)
 
-rollBtn.MouseButton1Click:Connect(function()
-    clear()
-
-    local y = 10
-
-    local fr = button(content,"Fast Roll : OFF",y)
-    y += 50
-    fr.MouseButton1Click:Connect(function()
-        FastRoll = not FastRoll
-        fr.Text = "Fast Roll : "..(FastRoll and "ON" or "OFF")
-    end)
-
-    local fc = button(content,"Fast Cast : OFF",y)
-    y += 50
-    fc.MouseButton1Click:Connect(function()
-        FastCast = not FastCast
-        fc.Text = "Fast Cast : "..(FastCast and "ON" or "OFF")
-    end)
-
-    local info = Instance.new("TextLabel", content)
-    info.Size = UDim2.new(1,-20,0,80)
-    info.Position = UDim2.new(0,10,0,y)
-    info.BackgroundTransparency = 1
-    info.TextColor3 = Color3.new(1,1,1)
-    info.TextWrapped = true
-    info.Text = [[
-Fast Roll & Cast (CLIENT):
-- Skip delay
-- Spam roll input
-- No auto stop
-- Safe for testing
-]]
-end)
-
--------------------------------------------------
--- 🎣 FISHING (MULTI CAST SIMULATION)
--------------------------------------------------
-fishingBtn.MouseButton1Click:Connect(function()
-    clear()
-    local y = 10
-
-    local cast = button(content,"Cast x5 (Test)",y)
-    y += 50
-
-    cast.MouseButton1Click:Connect(function()
-        task.spawn(function()
-            for i=1,5 do
-                if FastCast then
-                    print("[FAST CAST]",i)
-                else
-                    print("[NORMAL CAST]",i)
-                end
-                -- GANTI BAGIAN INI DENGAN REMOTE GAME LU SENDIRI
-                task.wait(FastCast and 0.05 or 0.5)
-            end
-        end)
-    end)
-end)
-
--------------------------------------------------
--- 🧭 TELEPORT (CHLOE STYLE)
--------------------------------------------------
+------------------------------------------------
+-- 🧭 TELEPORT (SCROLLABLE + REAL SYSTEM)
+------------------------------------------------
 tpBtn.MouseButton1Click:Connect(function()
     clear()
 
+    -- SCROLL FRAME
+    local scroll = Instance.new("ScrollingFrame", content)
+    scroll.Size = UDim2.new(1,0,1,0)
+    scroll.CanvasSize = UDim2.new(0,0,0,0)
+    scroll.ScrollBarThickness = 6
+    scroll.BackgroundTransparency = 1
+    scroll.AutomaticCanvasSize = Enum.AutomaticSize.None
+
+    local layout = Instance.new("UIListLayout", scroll)
+    layout.Padding = UDim.new(0,8)
+
+    layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        scroll.CanvasSize = UDim2.new(0,0,0,layout.AbsoluteContentSize.Y + 10)
+    end)
+
+    -- MAP DATA (ISI CFrame SENDIRI)
     local maps = {
-        "Acient jungle",
-        "Acient jungle outside",
-        "Acient ruin",
-        "Coral Reefs",
-        "Creter island ground",
-        "Creter island top",
-        "Crystal Depths",
-        "Crystaline Pessage",
-        "Esoteric Deep",
-        "Fishermand island",
-        "Kohana spot 1",
-        "Kohana spot 2",
-        "Kohana Volcano",
-        "Leviatan Den",
-        "Lost shore",
-        "Pirate cove",
-        "Pirate treasure room",
-        "Secred temple",
-        "Secret pessege",
-        "Sisyphus statue",
-        "Tropical grove",
-        "Tropical grove cave",
-        "Underground cellar",
-        "Weater machine"
+        ["Acient jungle"] = nil,
+        ["Acient jungle outside"] = nil,
+        ["Acient ruin"] = nil,
+        ["Coral Reefs"] = nil,
+        ["Creter island ground"] = nil,
+        ["Creter island top"] = nil,
+        ["Crystal Depths"] = nil,
+        ["Crystaline Pessage"] = nil,
+        ["Esoteric Deep"] = nil,
+        ["Fishermand island"] = nil,
+        ["Kohana spot 1"] = nil,
+        ["Kohana spot 2"] = nil,
+        ["Kohana Volcano"] = nil,
+        ["Leviatan Den"] = nil,
+        ["Lost shore"] = nil,
+        ["Pirate cove"] = nil,
+        ["Pirate treasure room"] = nil,
+        ["Secred temple"] = nil,
+        ["Secret pessege"] = nil,
+        ["Sisyphus statue"] = nil,
+        ["Tropical grove"] = nil,
+        ["Tropical grove cave"] = nil,
+        ["Underground cellar"] = nil,
+        ["Weater machine"] = nil
     }
 
-    local y = 10
-    for _,name in ipairs(maps) do
-        local b = button(content,name,y)
-        y += 45
+    for name,cf in pairs(maps) do
+        local mapBtn = button(scroll,name)
 
-        b.MouseButton1Click:Connect(function()
+        mapBtn.MouseButton1Click:Connect(function()
             clear()
-            local info = Instance.new("TextLabel", content)
-            info.Size = UDim2.new(1,-20,0,60)
-            info.Position = UDim2.new(0,10,0,10)
-            info.Text = name
-            info.TextColor3 = Color3.new(1,1,1)
-            info.BackgroundTransparency = 1
 
-            local tp = button(content,"Teleport to Location",80)
+            local back = button(content,"← Back")
+            back.Position = UDim2.new(0,10,0,10)
+            back.MouseButton1Click:Connect(function()
+                tpBtn:Fire()
+            end)
+
+            local tp = button(content,"Teleport to Location")
+            tp.Position = UDim2.new(0,10,0,60)
+
             tp.MouseButton1Click:Connect(function()
                 local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    -- GANTI CFrame INI SESUAI MAP GAME LU
-                    hrp.CFrame = hrp.CFrame + Vector3.new(0,0,0)
-                    print("[TP]",name)
+                if hrp and cf then
+                    hrp.CFrame = cf
+                else
+                    warn("CFrame map belum diisi:",name)
                 end
             end)
         end)
@@ -219,4 +164,4 @@ close.MouseButton1Click:Connect(function()
     gui:Destroy()
 end)
 
-print("[Fish It] Chloe-Style UI Loaded (TEST)")
+print("[Fish It] Chloe Style FIXED loaded")
