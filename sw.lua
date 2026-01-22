@@ -1,11 +1,12 @@
--- Fish It | Full UI + Fast Roll + Multi Cast + REAL TELEPORT
--- Delta Executor SAFE
--- NO AUTO STOP
+-- Fish It | Chloe-Style UI (SAFE TEST VERSION)
+-- For Testing / Own Game Only
+-- Delta Executor Friendly
 
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 -- SERVICES
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local lp = Players.LocalPlayer
 
@@ -17,54 +18,53 @@ local function getGuiParent()
     return CoreGui
 end
 
--- ================= STATE =================
-local FastRoll = false
-local MultiCast = false
-
--- ================= GUI =================
-local gui = Instance.new("ScreenGui", getGuiParent())
-gui.Name = "FishIt_UI"
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "FishIt_ChloeStyle"
 gui.ResetOnSpawn = false
+gui.Parent = getGuiParent()
 
+-- MAIN FRAME
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromScale(0.38,0.45)
-main.Position = UDim2.fromScale(0.31,0.25)
+main.Size = UDim2.fromScale(0.55,0.6)
+main.Position = UDim2.fromScale(0.22,0.2)
 main.BackgroundColor3 = Color3.fromRGB(18,18,18)
 main.Active = true
 main.Draggable = true
+Instance.new("UICorner", main)
 
 -- HEADER
 local header = Instance.new("Frame", main)
 header.Size = UDim2.new(1,0,0,40)
-header.BackgroundColor3 = Color3.fromRGB(25,25,25)
+header.BackgroundColor3 = Color3.fromRGB(28,28,28)
+Instance.new("UICorner", header)
 
 local title = Instance.new("TextLabel", header)
-title.Size = UDim2.new(1,-60,1,0)
+title.Text = "Fish It | Chloe Style (TEST)"
+title.Size = UDim2.new(1,-90,1,0)
 title.Position = UDim2.new(0,10,0,0)
-title.Text = "Fish It | Narumi"
-title.TextColor3 = Color3.new(1,1,1)
 title.BackgroundTransparency = 1
-title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.new(1,1,1)
+title.TextXAlignment = Enum.TextXAlignment.Left
 
 local close = Instance.new("TextButton", header)
-close.Size = UDim2.new(0,40,1,0)
-close.Position = UDim2.new(1,-40,0,0)
 close.Text = "X"
-close.BackgroundColor3 = Color3.fromRGB(150,50,50)
+close.Size = UDim2.new(0,30,0,30)
+close.Position = UDim2.new(1,-35,0,5)
 
 -- SIDEBAR
 local sidebar = Instance.new("Frame", main)
-sidebar.Size = UDim2.new(0,140,1,-40)
+sidebar.Size = UDim2.new(0,150,1,-40)
 sidebar.Position = UDim2.new(0,0,0,40)
 sidebar.BackgroundColor3 = Color3.fromRGB(22,22,22)
 
 -- CONTENT
 local content = Instance.new("Frame", main)
-content.Size = UDim2.new(1,-140,1,-40)
-content.Position = UDim2.new(0,140,0,40)
+content.Size = UDim2.new(1,-150,1,-40)
+content.Position = UDim2.new(0,150,0,40)
 content.BackgroundTransparency = 1
 
--- ================= UTILS =================
+-- UTILS
 local function clear()
     for _,v in pairs(content:GetChildren()) do
         if v:IsA("GuiObject") then
@@ -73,126 +73,150 @@ local function clear()
     end
 end
 
-local function button(parent,text,y,cb)
+local function button(parent,text,y)
     local b = Instance.new("TextButton", parent)
-    b.Size = UDim2.new(1,-20,0,38)
-    b.Position = UDim2.new(0,10,0,y)
     b.Text = text
-    b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    b.Size = UDim2.new(1,-10,0,40)
+    b.Position = UDim2.new(0,5,0,y)
+    b.BackgroundColor3 = Color3.fromRGB(45,45,45)
     b.TextColor3 = Color3.new(1,1,1)
-    b.Font = Enum.Font.Gotham
-    b.MouseButton1Click:Connect(cb)
+    Instance.new("UICorner", b)
     return b
 end
 
--- ================= SIDEBAR =================
-button(sidebar,"🎣 Fishing",10,function()
+-- SIDEBAR BUTTONS
+local fishingBtn = button(sidebar,"🎣 Fishing",10)
+local tpBtn      = button(sidebar,"🧭 Teleport",60)
+local rollBtn    = button(sidebar,"⚡ Fast Roll",110)
+
+-------------------------------------------------
+-- ⚡ FAST ROLL + FAST CAST (CLIENT SIDE)
+-------------------------------------------------
+local FastRoll = false
+local FastCast = false
+
+rollBtn.MouseButton1Click:Connect(function()
     clear()
 
-    button(content,"Fast Roll : "..(FastRoll and "ON" or "OFF"),10,function()
+    local y = 10
+
+    local fr = button(content,"Fast Roll : OFF",y)
+    y += 50
+    fr.MouseButton1Click:Connect(function()
         FastRoll = not FastRoll
+        fr.Text = "Fast Roll : "..(FastRoll and "ON" or "OFF")
     end)
 
-    button(content,"Multi Cast (5x) : "..(MultiCast and "ON" or "OFF"),55,function()
-        MultiCast = not MultiCast
+    local fc = button(content,"Fast Cast : OFF",y)
+    y += 50
+    fc.MouseButton1Click:Connect(function()
+        FastCast = not FastCast
+        fc.Text = "Fast Cast : "..(FastCast and "ON" or "OFF")
     end)
+
+    local info = Instance.new("TextLabel", content)
+    info.Size = UDim2.new(1,-20,0,80)
+    info.Position = UDim2.new(0,10,0,y)
+    info.BackgroundTransparency = 1
+    info.TextColor3 = Color3.new(1,1,1)
+    info.TextWrapped = true
+    info.Text = [[
+Fast Roll & Cast (CLIENT):
+- Skip delay
+- Spam roll input
+- No auto stop
+- Safe for testing
+]]
 end)
 
--- ================= TELEPORT LOGIC =================
-local MAP_NAMES = {
-    "acient jungle","acient jungle outside","acient ruin","coral reefs",
-    "creter island ground","creter island top","crystal depths",
-    "crystaline pessage","esoteric deep","fishermand island",
-    "kohana spot 1","kohana spot 2","kohana volcano",
-    "leviatan den","lost shore","pirate cove",
-    "pirate treasure room","secred temple","secret pessege",
-    "sisyphus statue","tropical grove","tropical grove cave",
-    "underground cellar","weater machine"
-}
-
--- Cari spawn REAL
-local function findRealSpawn(mapName)
-    mapName = mapName:lower()
-
-    for _,obj in ipairs(workspace:GetDescendants()) do
-        if obj:IsA("Model") or obj:IsA("Folder") then
-            if obj.Name:lower():find(mapName) then
-
-                -- 1. SpawnLocation
-                for _,v in ipairs(obj:GetDescendants()) do
-                    if v:IsA("SpawnLocation") then
-                        return v.CFrame + Vector3.new(0,5,0)
-                    end
-                end
-
-                -- 2. PrimaryPart
-                if obj:IsA("Model") and obj.PrimaryPart then
-                    return obj.PrimaryPart.CFrame + Vector3.new(0,5,0)
-                end
-
-                -- 3. Part terbesar
-                local biggest, size = nil, 0
-                for _,v in ipairs(obj:GetDescendants()) do
-                    if v:IsA("BasePart") then
-                        local vol = v.Size.X * v.Size.Y * v.Size.Z
-                        if vol > size then
-                            size = vol
-                            biggest = v
-                        end
-                    end
-                end
-                if biggest then
-                    return biggest.CFrame + Vector3.new(0,5,0)
-                end
-            end
-        end
-    end
-end
-
--- ================= TELEPORT MENU =================
-button(sidebar,"🧭 Teleport",55,function()
+-------------------------------------------------
+-- 🎣 FISHING (MULTI CAST SIMULATION)
+-------------------------------------------------
+fishingBtn.MouseButton1Click:Connect(function()
     clear()
     local y = 10
 
-    for _,name in ipairs(MAP_NAMES) do
-        button(content,name,y,function()
-            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local cf = findRealSpawn(name)
-                if cf then
-                    hrp.CFrame = cf
-                    print("[TP] Success:",name)
+    local cast = button(content,"Cast x5 (Test)",y)
+    y += 50
+
+    cast.MouseButton1Click:Connect(function()
+        task.spawn(function()
+            for i=1,5 do
+                if FastCast then
+                    print("[FAST CAST]",i)
                 else
-                    warn("[TP] Map not found:",name)
+                    print("[NORMAL CAST]",i)
                 end
+                -- GANTI BAGIAN INI DENGAN REMOTE GAME LU SENDIRI
+                task.wait(FastCast and 0.05 or 0.5)
             end
         end)
-        y += 40
+    end)
+end)
+
+-------------------------------------------------
+-- 🧭 TELEPORT (CHLOE STYLE)
+-------------------------------------------------
+tpBtn.MouseButton1Click:Connect(function()
+    clear()
+
+    local maps = {
+        "Acient jungle",
+        "Acient jungle outside",
+        "Acient ruin",
+        "Coral Reefs",
+        "Creter island ground",
+        "Creter island top",
+        "Crystal Depths",
+        "Crystaline Pessage",
+        "Esoteric Deep",
+        "Fishermand island",
+        "Kohana spot 1",
+        "Kohana spot 2",
+        "Kohana Volcano",
+        "Leviatan Den",
+        "Lost shore",
+        "Pirate cove",
+        "Pirate treasure room",
+        "Secred temple",
+        "Secret pessege",
+        "Sisyphus statue",
+        "Tropical grove",
+        "Tropical grove cave",
+        "Underground cellar",
+        "Weater machine"
+    }
+
+    local y = 10
+    for _,name in ipairs(maps) do
+        local b = button(content,name,y)
+        y += 45
+
+        b.MouseButton1Click:Connect(function()
+            clear()
+            local info = Instance.new("TextLabel", content)
+            info.Size = UDim2.new(1,-20,0,60)
+            info.Position = UDim2.new(0,10,0,10)
+            info.Text = name
+            info.TextColor3 = Color3.new(1,1,1)
+            info.BackgroundTransparency = 1
+
+            local tp = button(content,"Teleport to Location",80)
+            tp.MouseButton1Click:Connect(function()
+                local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    -- GANTI CFrame INI SESUAI MAP GAME LU
+                    hrp.CFrame = hrp.CFrame + Vector3.new(0,0,0)
+                    print("[TP]",name)
+                end
+            end)
+        end)
     end
 end)
 
--- ================= CORE LOOP =================
-task.spawn(function()
-    while task.wait(0.05) do
-        if FastRoll then
-            print("[FAST ROLL]")
-            -- RemoteCast:FireServer()
-            -- RemoteAccept:FireServer()
-        end
-
-        if MultiCast then
-            for i=1,5 do
-                print("[MULTI CAST]",i)
-                -- RemoteCast:FireServer()
-                -- RemoteAccept:FireServer()
-                task.wait(0.03)
-            end
-        end
-    end
-end)
-
+-- CLOSE
 close.MouseButton1Click:Connect(function()
     gui:Destroy()
 end)
 
-print("[FishIt] REAL TELEPORT + FAST ROLL LOADED")
+print("[Fish It] Chloe-Style UI Loaded (TEST)")
